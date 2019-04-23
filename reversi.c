@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include "reversi.h"
 
@@ -258,10 +259,23 @@ static void run_single_player()
 			current_pos = promt_to_place(in_game_board, player);
 		}
 		else {
+			puts("\n");
+			int randnum = rand() % 3;
+			switch (randnum) {
+				case(0):
+					puts("Robot: Let me think for while...");
+					break;
+				case(1):
+					puts("Robot: Aha, smart move.");
+					break;
+				case(2):
+					puts("Robot: I'm going to win!");
+					break;
+			}
+			sleep(4);
 			current_pos = ai_place(in_game_board);
 		}
 		next_state(&in_game_board, &player, current_pos);
-		puts("\n");
 	}
 	finish_game(black_score, white_score);
 }
