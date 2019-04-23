@@ -11,4 +11,4 @@ win: reversi.c
 	$(WINCC) $(CFLAGS) $(LDFLAGS) reversi.c -o CReversi.exe
 
 clean:
-	$(RM) CReversi* reversi
+	$(RM) CReversi*
