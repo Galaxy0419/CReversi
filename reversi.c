@@ -1,3 +1,4 @@
+// Copyright (c) 2019, William TANG <galaxyking0419@gmail.com>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>

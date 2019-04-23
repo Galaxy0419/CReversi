@@ -1,3 +1,4 @@
+# Copyright (c) 2019, William TANG <galaxyking0419@gmail.com>
 GCC = gcc
 WINCC = x86_64-w64-mingw32-gcc
 RM  = rm -f

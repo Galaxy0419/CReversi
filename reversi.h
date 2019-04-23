@@ -1,3 +1,4 @@
+// Copyright (c) 2019, William TANG <galaxyking0419@gmail.com>
 #ifndef _REVERSI_H
 #define _REVERSI_H
 
