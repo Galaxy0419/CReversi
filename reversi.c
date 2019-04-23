@@ -210,13 +210,57 @@ void run_two_players()
 	int player = 1;
 	int black_score = 0;
 	int white_score = 0;
+	cord current_pos = {-1, -1};
 	board in_game_board = new_board();
 
 	while (player != 0) {
 		score(in_game_board, &black_score, &white_score);
 		print_board(in_game_board, black_score, white_score);
-		cord pos = promt_to_place(in_game_board, player);
-		next_state(&in_game_board, &player, pos);
+		current_pos = promt_to_place(in_game_board, player);
+		next_state(&in_game_board, &player, current_pos);
+		puts("\n");
+	}
+	finish_game(black_score, white_score);
+}
+
+cord ai_place(board game_board)
+{
+	int max_enclose = 0;
+	int max_enclose_index = 0;
+	moves v_mov = valid_moves(game_board, 2);
+	for (size_t i=0; v_mov.move[i][0] != -1; i++){
+		int test_player = 2;
+		int black_score = 0;
+		int white_score = 0;
+		cord current_pos = {v_mov.move[i][0], v_mov.move[i][1]};
+		board test_board = game_board;
+		next_state(&test_board, &test_player, current_pos);
+		score(test_board, &black_score, &white_score);
+		if (white_score > max_enclose)
+			max_enclose_index = i;
+	}
+	cord max_score_pos = {v_mov.move[max_enclose_index][0], v_mov.move[max_enclose_index][0]};
+	return max_score_pos;
+}
+
+void run_single_player()
+{
+	int player = 1;
+	int black_score = 0;
+	int white_score = 0;
+	board in_game_board = new_board();
+
+	while (player != 0) {
+		score(in_game_board, &black_score, &white_score);
+		print_board(in_game_board, black_score, white_score);
+		cord current_pos = {-1, -1};
+		if (player == 1){
+			current_pos = promt_to_place(in_game_board, player);
+		}
+		else {
+			current_pos = ai_place(in_game_board);
+		}
+		next_state(&in_game_board, &player, current_pos);
 		puts("\n");
 	}
 	finish_game(black_score, white_score);
@@ -225,6 +269,17 @@ void run_two_players()
 // main function
 int main(void)
 {
-	run_two_players();
+	char choice[2];
+	puts("Welcome to C Reversi!");
+	puts("1. Single Player");
+	puts("2. Two Players");
+	printf("Please choose your game mode: ");
+	my_gets(choice, sizeof(choice));
+	if (choice[0] == '1')
+		run_single_player();
+	else if (choice[0] == '2')
+		run_two_players();
+	else
+		puts("Okay, seems you don't want to play...");
 	return 0;
 }
