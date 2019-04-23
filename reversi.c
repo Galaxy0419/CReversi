@@ -146,11 +146,6 @@ moves valid_moves(board game_board, int player)
 
 void next_state(board *game_board, int* player, cord pos)
 {
-	if (valid_moves(*game_board, *player).move[0][0] == -1 &&
-	valid_moves(*game_board, your_oppenent(*player)).move[0][0] == -1) {
-		*player = 0;
-		return;
-	}
 	game_board->board_matrix[pos.row][pos.column] = *player;
 	for (size_t i=0; i<8; i++) {
 		cord dir = {valid_direction[i][0], valid_direction[i][1]};
@@ -159,6 +154,11 @@ void next_state(board *game_board, int* player, cord pos)
 				game_board->board_matrix[pos.row + j*dir.row][pos.column + j*dir.column] = *player;
 			}
 		}
+	}
+	if (valid_moves(*game_board, *player).move[0][0] == -1 &&
+	valid_moves(*game_board, your_oppenent(*player)).move[0][0] == -1) {
+		*player = 0;
+		return;
 	}
 	*player = your_oppenent(*player);
 }
@@ -192,8 +192,8 @@ cord promt_to_place(board game_board, int player)
 void finish_game(int black_score, int white_score)
 {
 	puts("The game has finished!");
-	printf("Black Score: %d", black_score);
-	printf("White Score: %d", white_score);
+	printf("Black Score: %d\n", black_score);
+	printf("White Score: %d\n", white_score);
 
 	if (black_score > white_score)
 		puts("Black Wins!");
