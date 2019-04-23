@@ -2,7 +2,7 @@
 GCC = gcc
 WINCC = x86_64-w64-mingw32-gcc
 RM  = rm -f
-CFLAGS = -march=x86-64 -mtune=generic -O3 -pipe -fno-plt
+CFLAGS = -march=x86-64 -mtune=generic -O3 -pipe -std=c18
 LDFLAGS = 
 
 *nix: reversi.c
