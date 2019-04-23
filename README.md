@@ -1,6 +1,5 @@
-# PyReversi
-One of my assignment in university.  
-balabala.....
+# CReversi
+Rewrite PyRversi in C 
 
 ## How To Play
 1. Choose the mode you want to play  
