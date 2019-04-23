@@ -237,10 +237,12 @@ static cord ai_place(board game_board)
 		board test_board = game_board;
 		next_state(&test_board, &test_player, current_pos);
 		score(test_board, &black_score, &white_score);
-		if (white_score > max_enclose)
+		if (white_score > max_enclose) {
+			max_enclose = white_score;
 			max_enclose_index = i;
+		}
 	}
-	cord max_score_pos = {v_mov.move[max_enclose_index][0], v_mov.move[max_enclose_index][0]};
+	cord max_score_pos = {v_mov.move[max_enclose_index][0], v_mov.move[max_enclose_index][1]};
 	return max_score_pos;
 }
 
