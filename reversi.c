@@ -4,7 +4,7 @@
 #include <string.h>
 #include "reversi.h"
 
-void my_gets(char *buffer, size_t buffer_len)
+static void my_gets(char *buffer, size_t buffer_len)
 {
     memset(buffer, 0, buffer_len);
 
@@ -17,26 +17,26 @@ void my_gets(char *buffer, size_t buffer_len)
     }
 }
 
-int your_oppenent(int player)
+static inline int your_oppenent(int player)
 {
 	if (player == 1)
 		return 2;
 	return 1;
 }
 
-bool on_board(int row, int column)
+static inline bool on_board(int row, int column)
 {
 	return (row >= 0 && row <=7) && (column >=0 && column <= 7);
 }
 
-int find_mapping_value(char pos)
+static int find_mapping_value(char pos)
 {
 	for (size_t i=0; i<8; i++)
 		if (pos == pos_map[i][0])
 			return atoi(&pos_map[i][1]);
 }
 
-cord position(char* input)
+static cord position(char* input)
 {
 	cord invalid_pos = {-1, -1};
 	if (strchr(valid_column, input[0]) != NULL
@@ -47,7 +47,7 @@ cord position(char* input)
 	return invalid_pos;
 }
 
-board new_board()
+static board new_board()
 {
 	board game_board;
 	int board[8][8] = {
@@ -64,7 +64,7 @@ board new_board()
 	return game_board;
 }
 
-void print_board(board game_board, int black_score, int white_score)
+static void print_board(board game_board, int black_score, int white_score)
 {
 	
 	for (size_t i=0; i<8; i++) {
@@ -87,7 +87,7 @@ void print_board(board game_board, int black_score, int white_score)
 	printf("     a b c d e f g h\n");
 }
 
-void score(board game_board, int* black_score, int* white_score)
+static void score(board game_board, int* black_score, int* white_score)
 {
 	*black_score = 0;
 	*white_score = 0;
@@ -101,7 +101,7 @@ void score(board game_board, int* black_score, int* white_score)
 	}
 }
 
-bool enclosing(board game_board, int player, cord pos, cord direction)
+static bool enclosing(board game_board, int player, cord pos, cord direction)
 {
 	int row = pos.row + direction.row;
 	int column = pos.column + direction.column;
@@ -117,7 +117,7 @@ bool enclosing(board game_board, int player, cord pos, cord direction)
 	return false;
 }
 
-moves valid_moves(board game_board, int player)
+static moves valid_moves(board game_board, int player)
 {
 	int index_counter = 0;
 	int dummy[2] = {-1, -1};
@@ -144,7 +144,7 @@ moves valid_moves(board game_board, int player)
 	return valid;
 }
 
-void next_state(board *game_board, int* player, cord pos)
+static void next_state(board *game_board, int* player, cord pos)
 {
 	game_board->board_matrix[pos.row][pos.column] = *player;
 	for (size_t i=0; i<8; i++) {
@@ -163,7 +163,7 @@ void next_state(board *game_board, int* player, cord pos)
 	*player = your_oppenent(*player);
 }
 
-cord promt_to_place(board game_board, int player)
+static cord promt_to_place(board game_board, int player)
 {
 	char pos[3];
 	char cplayer;
@@ -189,7 +189,7 @@ cord promt_to_place(board game_board, int player)
 	return promt_to_place(game_board, player);
 }
 
-void finish_game(int black_score, int white_score)
+static void finish_game(int black_score, int white_score)
 {
 	puts("The game has finished!");
 	printf("Black Score: %d\n", black_score);
@@ -205,7 +205,7 @@ void finish_game(int black_score, int white_score)
 	exit(0);
 }
 
-void run_two_players()
+static void run_two_players()
 {
 	int player = 1;
 	int black_score = 0;
@@ -223,7 +223,7 @@ void run_two_players()
 	finish_game(black_score, white_score);
 }
 
-cord ai_place(board game_board)
+static cord ai_place(board game_board)
 {
 	int max_enclose = 0;
 	int max_enclose_index = 0;
@@ -243,7 +243,7 @@ cord ai_place(board game_board)
 	return max_score_pos;
 }
 
-void run_single_player()
+static void run_single_player()
 {
 	int player = 1;
 	int black_score = 0;
