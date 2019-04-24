@@ -6,7 +6,7 @@
 #include <string.h>
 #include "reversi.h"
 
-static void my_gets(char *buffer, size_t buffer_len)
+static void my_gets(char *restrict buffer, size_t buffer_len)
 {
 	char c;
 	int bytes_read = 0;
@@ -37,7 +37,7 @@ static int find_mapping_value(char pos)
 			return atoi(&pos_map[i][1]);
 }
 
-static cord position(char* input)
+static cord position(char *restrict input)
 {
 	cord invalid_pos = {-1, -1};
 	if (strchr(valid_column, input[0]) != NULL
@@ -71,7 +71,7 @@ static void print_board(board game_board, int black_score, int white_score)
 	printf("     a b c d e f g h\n");
 }
 
-static void score(board game_board, int* black_score, int* white_score)
+static void score(board game_board, int *restrict black_score, int *restrict white_score)
 {
 	*black_score = 0;
 	*white_score = 0;
@@ -101,7 +101,7 @@ static bool enclosing(board game_board, int player, cord pos, cord direction)
 	return false;
 }
 
-static int valid_moves(board game_board, int player, cord *valid_cords)
+static int valid_moves(board game_board, int player, cord *restrict valid_cords)
 {
 	int mem_ctr = 0;
 
@@ -123,7 +123,7 @@ static int valid_moves(board game_board, int player, cord *valid_cords)
 	return mem_ctr;
 }
 
-static void next_state(board *game_board, int* player, cord pos)
+static void next_state(board *restrict game_board, int *restrict player, cord pos)
 {
 	game_board->board_matrix[pos.row][pos.column] = *player;
 	for (size_t i=0; i<8; i++) {
