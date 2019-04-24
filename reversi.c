@@ -49,7 +49,7 @@ static cord position(char* input)
 	return invalid_pos;
 }
 
-static board new_board()
+static board new_board(void)
 {
 	board game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -204,7 +204,7 @@ static void finish_game(int black_score, int white_score)
 	exit(0);
 }
 
-static void run_two_players()
+static void run_two_players(void)
 {
 	int player = 1;
 	int black_score = 0;
@@ -244,7 +244,7 @@ static cord ai_place(board game_board)
 	return max_score_pos;
 }
 
-static void run_single_player()
+static void run_single_player(void)
 {
 	int player = 1;
 	int black_score = 0;
