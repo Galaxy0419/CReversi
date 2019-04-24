@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#define MAX_ROBOT_SENTENCE 3
+
 typedef struct board {
 	int8_t board_matrix[8][8];
 }board_t;
@@ -27,6 +29,7 @@ const char pos_map[8][8] = {
 	{'g', '6'},
 	{'h', '7'}
 };
+
 const int valid_direction[8][2] = {
 	{1, 0},
 	{-1, 0},
@@ -37,4 +40,11 @@ const int valid_direction[8][2] = {
 	{1, 1},
 	{-1, -1}
 };
+
+const char sentence_of_robot[3][64] = {
+	"Let me think for a while...",
+	"Aha, smart move.",
+	"I'm going to win!"
+};
+
 #endif

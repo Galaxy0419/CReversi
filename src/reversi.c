@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include <string.h>
 #include "reversi.h"
@@ -263,6 +264,7 @@ static void run_single_player(int8_t level)
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
 	}};
+	srand(time(NULL));
 
 	while (player != 0) {
 		cord_t current_pos = {-1, -1};
@@ -273,18 +275,8 @@ static void run_single_player(int8_t level)
 		}
 		else {
 			puts("\n");
-			int8_t randnum = rand() % 3;
-			switch (randnum) {
-				case(0):
-					puts("Robot: Let me think for while...");
-					break;
-				case(1):
-					puts("Robot: Aha, smart move.");
-					break;
-				case(2):
-					puts("Robot: I'm going to win!");
-					break;
-			}
+			int8_t randnum = rand() % MAX_ROBOT_SENTENCE;
+			printf("%s\n", sentence_of_robot[randnum]);
 			puts("\n");
 			sleep(4);
 			current_pos = ai_place(in_game_board, level);
