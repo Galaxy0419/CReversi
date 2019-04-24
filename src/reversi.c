@@ -101,15 +101,9 @@ static bool enclosing(board game_board, int player, cord pos, cord direction)
 	return false;
 }
 
-static moves valid_moves(board game_board, int player)
+static int valid_moves(board game_board, int player, cord *valid_cords)
 {
-	int index_counter = 0;
-	int dummy[2] = {-1, -1};
-	moves valid;
-	for (size_t i=0; i<32; i++)
-	{
-		memcpy(&valid.move[i], &dummy, sizeof(dummy));
-	}
+	int mem_ctr = 0;
 
 	for (size_t i=0; i<8; i++) {
 		for (size_t j=0; j<8; j++) {
@@ -118,14 +112,15 @@ static moves valid_moves(board game_board, int player)
 				cord dir = {valid_direction[z][0], valid_direction[z][1]};
 				if (game_board.board_matrix[i][j] == 0
 				&& enclosing(game_board, player, pos, dir)) {
-					valid.move[index_counter][0] = i;
-					valid.move[index_counter][1] = j;
-					index_counter++;
+					valid_cords = (cord *)realloc(valid_cords, sizeof(cord) * (mem_ctr+1));
+					(valid_cords+mem_ctr)->row = i;
+					(valid_cords+mem_ctr)->column = j;
+					mem_ctr++;
 				}
 			}
 		}
 	}
-	return valid;
+	return mem_ctr;
 }
 
 static void next_state(board *game_board, int* player, cord pos)
@@ -139,8 +134,8 @@ static void next_state(board *game_board, int* player, cord pos)
 			}
 		}
 	}
-	if (valid_moves(*game_board, *player).move[0][0] == -1 &&
-	valid_moves(*game_board, your_oppenent(*player)).move[0][0] == -1) {
+	cord *moves = (cord *)malloc(sizeof(cord));
+	if (valid_moves(*game_board, *player, moves) == 0) {
 		*player = 0;
 		return;
 	}
@@ -163,11 +158,12 @@ static cord promt_to_place(board game_board, int player)
 		exit(0);
 	}
 
+	cord *moves = (cord *)malloc(sizeof(cord));
 	cord converted_pos = position(pos);
-	moves v_movs = valid_moves(game_board, player);
-	for (size_t i=0; v_movs.move[i][0] != -1; i++)
-		if (converted_pos.row == v_movs.move[i][0] 
-		&& converted_pos.column == v_movs.move[i][1])
+	int lenghth = valid_moves(game_board, player, moves);
+	for (size_t i=0; i<lenghth; i++)
+		if (converted_pos.row == (moves+i)->row 
+		&& converted_pos.column == (moves+i)->column)
 			return converted_pos;
 	puts("Come on, man.");
 	return promt_to_place(game_board, player);
@@ -219,22 +215,21 @@ static cord ai_place(board game_board)
 {
 	int max_enclose = 0;
 	int max_enclose_index = 0;
-	moves v_mov = valid_moves(game_board, 2);
-	for (size_t i=0; v_mov.move[i][0] != -1; i++){
+	cord *moves = (cord *)malloc(sizeof(cord));
+	int length = valid_moves(game_board, 2, moves);
+	for (size_t i=0; i<length; i++){
 		int test_player = 2;
 		int black_score = 0;
 		int white_score = 0;
-		cord current_pos = {v_mov.move[i][0], v_mov.move[i][1]};
 		board test_board = game_board;
-		next_state(&test_board, &test_player, current_pos);
+		next_state(&test_board, &test_player, *(moves+i));
 		score(test_board, &black_score, &white_score);
 		if (white_score > max_enclose) {
 			max_enclose = white_score;
 			max_enclose_index = i;
 		}
 	}
-	cord max_score_pos = {v_mov.move[max_enclose_index][0], v_mov.move[max_enclose_index][1]};
-	return max_score_pos;
+	return *(moves+max_enclose_index);
 }
 
 static void run_single_player(void)

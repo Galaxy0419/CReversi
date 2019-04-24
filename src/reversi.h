@@ -6,10 +6,6 @@ typedef struct board {
 	int board_matrix[8][8];
 }board;
 
-typedef struct moves {
-	int move[32][2];
-}moves;
-
 typedef struct cord {
 	int row;
 	int column;
