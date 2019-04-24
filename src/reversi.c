@@ -8,13 +8,13 @@
 
 static void my_gets(char *buffer, size_t buffer_len)
 {
-    char c;
-    int bytes_read = 0;
-    while ((c = getchar()) != EOF && c != '\n') {
-        if (bytes_read < buffer_len - 1) {
-            buffer[bytes_read++] = c;
-        }
-    }
+	char c;
+	int bytes_read = 0;
+	while ((c = getchar()) != EOF && c != '\n') {
+		if (bytes_read < buffer_len - 1) {
+			buffer[bytes_read++] = c;
+		}
+	}
 	buffer[bytes_read];
 }
 
