@@ -11,8 +11,10 @@ typedef struct cord {
 	int column;
 }cord;
 
+const char* valid_difficulty = "123";
 const char* valid_column = "abcdefgh";
 const char* valid_row = "12345678";
+
 const char pos_map[8][8] = {
 	{'a', '0'},
 	{'b', '1'},

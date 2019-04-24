@@ -134,7 +134,7 @@ static void next_state(board *restrict game_board, int *restrict player, cord po
 			}
 		}
 	}
-	cord *moves = (cord *)malloc(sizeof(cord));
+	cord *restrict moves = (cord *)malloc(sizeof(cord));
 	if (valid_moves(*game_board, *player, moves) == 0) {
 		*player = 0;
 		return;
@@ -158,7 +158,7 @@ static cord promt_to_place(board game_board, int player)
 		exit(0);
 	}
 
-	cord *moves = (cord *)malloc(sizeof(cord));
+	cord *restrict moves = (cord *)malloc(sizeof(cord));
 	cord converted_pos = position(pos);
 	int lenghth = valid_moves(game_board, player, moves);
 	for (size_t i=0; i<lenghth; i++)
@@ -211,28 +211,40 @@ static void run_two_players(void)
 	finish_game(black_score, white_score);
 }
 
-static cord ai_place(board game_board)
+static cord ai_place(board game_board, int level)
 {
-	int max_enclose = 0;
-	int max_enclose_index = 0;
-	cord *moves = (cord *)malloc(sizeof(cord));
+	int enclose_index = 0;
+	cord *restrict moves = (cord *)malloc(sizeof(cord));
 	int length = valid_moves(game_board, 2, moves);
-	for (size_t i=0; i<length; i++){
-		int test_player = 2;
-		int black_score = 0;
-		int white_score = 0;
-		board test_board = game_board;
-		next_state(&test_board, &test_player, *(moves+i));
-		score(test_board, &black_score, &white_score);
-		if (white_score > max_enclose) {
-			max_enclose = white_score;
-			max_enclose_index = i;
+	if (level != 2) {
+		int enclose;
+		if (level == 1)
+			enclose = 8;
+		else
+			enclose = 0;
+		
+		for (size_t i=0; i<length; i++){
+			int test_player = 2;
+			int black_score = 0;
+			int white_score = 0;
+			board test_board = game_board;
+			next_state(&test_board, &test_player, *(moves+i));
+			score(test_board, &black_score, &white_score);
+			if (level == 3 && white_score > enclose) {
+				enclose = white_score;
+				enclose_index = i;
+			} else if (level == 1 && white_score < enclose) {
+				enclose = white_score;
+				enclose_index = i;
+			}	
 		}
+	} else {
+		enclose_index = rand() % length;
 	}
-	return *(moves+max_enclose_index);
+	return *(moves+enclose_index);
 }
 
-static void run_single_player(void)
+static void run_single_player(int level)
 {
 	int player = 1;
 	int black_score = 0;
@@ -270,7 +282,7 @@ static void run_single_player(void)
 					break;
 			}
 			sleep(4);
-			current_pos = ai_place(in_game_board);
+			current_pos = ai_place(in_game_board, level);
 		}
 		next_state(&in_game_board, &player, current_pos);
 	}
@@ -286,11 +298,24 @@ int main(void)
 	puts("2. Two Players");
 	printf("Please choose your game mode: ");
 	my_gets(choice, sizeof(choice));
-	if (choice[0] == '1')
-		run_single_player();
-	else if (choice[0] == '2')
+	if (choice[0] == '1'){
+		char level[2];
+		puts("1. Noob");
+		puts("2. Average");
+		puts("3. Asian");
+		printf("Please choose a difficulty: ");
+		my_gets(level, sizeof(level));
+		if (strchr(valid_difficulty, level[0]) == NULL) {
+			puts("Don't mess up with me! Byebye!");
+			exit(1);
+		}
+		run_single_player(atoi(&level[0]));
+	}
+	else if (choice[0] == '2'){
 		run_two_players();
-	else
-		puts("Okay, seems you don't want to play...");
+	}
+	else{
+		puts("Don't mess up with me! Byebye!");
+	}
 	return 0;
 }
