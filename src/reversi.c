@@ -1,15 +1,16 @@
 // Copyright (c) 2019, William TANG <galaxyking0419@gmail.com>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include "reversi.h"
 
-static void my_gets(char *restrict buffer, size_t buffer_len)
+static void my_gets(char *restrict const buffer, size_t buffer_len)
 {
 	char c;
-	int bytes_read = 0;
+	size_t bytes_read = 0;
 	while ((c = getchar()) != EOF && c != '\n') {
 		if (bytes_read < buffer_len - 1) {
 			buffer[bytes_read++] = c;
@@ -18,26 +19,26 @@ static void my_gets(char *restrict buffer, size_t buffer_len)
 	buffer[bytes_read];
 }
 
-static inline int your_oppenent(int player)
+static inline int8_t your_oppenent(int8_t player)
 {
 	if (player == 1)
 		return 2;
 	return 1;
 }
 
-static inline bool on_board(int row, int column)
+static inline bool on_board(int8_t row, int8_t column)
 {
 	return (row >= 0 && row <=7) && (column >=0 && column <= 7);
 }
 
-static int find_mapping_value(char pos)
+static int8_t find_mapping_value(char pos)
 {
 	for (size_t i=0; i<8; i++)
 		if (pos == pos_map[i][0])
 			return atoi(&pos_map[i][1]);
 }
 
-static cord_t position(char *restrict input)
+static cord_t position(char *restrict const input)
 {
 	cord_t invalid_pos = {-1, -1};
 	if (strchr(valid_column, input[0]) != NULL
@@ -48,7 +49,7 @@ static cord_t position(char *restrict input)
 	return invalid_pos;
 }
 
-static void print_board(board_t game_board, int black_score, int white_score)
+static void print_board(board_t game_board, int8_t black_score, int8_t white_score)
 {
 	
 	for (size_t i=0; i<8; i++) {
@@ -71,7 +72,7 @@ static void print_board(board_t game_board, int black_score, int white_score)
 	printf("     a b c d e f g h\n");
 }
 
-static void score(board_t game_board, int *restrict black_score, int *restrict white_score)
+static void score(board_t game_board, int8_t *restrict const black_score, int8_t *restrict const white_score)
 {
 	*black_score = 0;
 	*white_score = 0;
@@ -85,10 +86,10 @@ static void score(board_t game_board, int *restrict black_score, int *restrict w
 	}
 }
 
-static bool enclosing(board_t game_board, int player, cord_t pos, cord_t direction)
+static bool enclosing(board_t game_board, int8_t player, cord_t pos, cord_t direction)
 {
-	int row = pos.row + direction.row;
-	int column = pos.column + direction.column;
+	int8_t row = pos.row + direction.row;
+	int8_t column = pos.column + direction.column;
 
 	while (on_board(row, column) 
 	&& game_board.board_matrix[row][column] == your_oppenent(player)) {
@@ -101,9 +102,9 @@ static bool enclosing(board_t game_board, int player, cord_t pos, cord_t directi
 	return false;
 }
 
-static int valid_moves(board_t game_board, int player, cord_t *restrict valid_cords)
+static int8_t valid_moves(board_t game_board, int8_t player, cord_t *restrict valid_cords)
 {
-	int mem_ctr = 0;
+	int8_t mem_ctr = 0;
 
 	for (size_t i=0; i<8; i++) {
 		for (size_t j=0; j<8; j++) {
@@ -123,7 +124,7 @@ static int valid_moves(board_t game_board, int player, cord_t *restrict valid_co
 	return mem_ctr;
 }
 
-static void next_state(board_t *restrict game_board, int *restrict player, cord_t pos)
+static void next_state(board_t *restrict const game_board, int8_t *restrict const player, cord_t pos)
 {
 	game_board->board_matrix[pos.row][pos.column] = *player;
 	for (size_t i=0; i<8; i++) {
@@ -142,7 +143,7 @@ static void next_state(board_t *restrict game_board, int *restrict player, cord_
 	}
 }
 
-static cord_t promt_to_place(board_t game_board, int player)
+static cord_t promt_to_place(board_t game_board, int8_t player)
 {
 	char pos[3];
 	char cplayer;
@@ -160,7 +161,7 @@ static cord_t promt_to_place(board_t game_board, int player)
 
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
 	cord_t converted_pos = position(pos);
-	int lenghth = valid_moves(game_board, player, moves);
+	size_t lenghth = valid_moves(game_board, player, moves);
 	for (size_t i=0; i<lenghth; i++)
 		if (converted_pos.row == (moves+i)->row 
 		&& converted_pos.column == (moves+i)->column)
@@ -169,7 +170,7 @@ static cord_t promt_to_place(board_t game_board, int player)
 	return promt_to_place(game_board, player);
 }
 
-static void finish_game(int black_score, int white_score)
+static void finish_game(int8_t black_score, int8_t white_score)
 {
 	puts("\n");
 	puts("The game has finished!\n");
@@ -188,9 +189,9 @@ static void finish_game(int black_score, int white_score)
 
 static void run_two_players(void)
 {
-	int player = 1;
-	int black_score = 2;
-	int white_score = 2;
+	int8_t player = 1;
+	int8_t black_score = 2;
+	int8_t white_score = 2;
 	cord_t current_pos = {-1, -1};
 	board_t in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -214,22 +215,22 @@ static void run_two_players(void)
 	finish_game(black_score, white_score);
 }
 
-static cord_t ai_place(board_t game_board, int level)
+static cord_t ai_place(board_t game_board, int8_t level)
 {
-	int enclose_index = 0;
+	int8_t enclose_index = 0;
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
-	int length = valid_moves(game_board, 2, moves);
+	size_t length = valid_moves(game_board, 2, moves);
 	if (level != 2) {
-		int enclose;
+		int8_t enclose;
 		if (level == 1)
 			enclose = 8;
 		else
 			enclose = 0;
 		
 		for (size_t i=0; i<length; i++){
-			int test_player = 2;
-			int black_score = 0;
-			int white_score = 0;
+			int8_t test_player = 2;
+			int8_t black_score = 0;
+			int8_t white_score = 0;
 			board_t test_board = game_board;
 			next_state(&test_board, &test_player, *(moves+i));
 			score(test_board, &black_score, &white_score);
@@ -247,11 +248,11 @@ static cord_t ai_place(board_t game_board, int level)
 	return *(moves+enclose_index);
 }
 
-static void run_single_player(int level)
+static void run_single_player(int8_t level)
 {
-	int player = 1;
-	int black_score = 2;
-	int white_score = 2;
+	int8_t player = 1;
+	int8_t black_score = 2;
+	int8_t white_score = 2;
 	board_t in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -272,7 +273,7 @@ static void run_single_player(int level)
 		}
 		else {
 			puts("\n");
-			int randnum = rand() % 3;
+			int8_t randnum = rand() % 3;
 			switch (randnum) {
 				case(0):
 					puts("Robot: Let me think for while...");

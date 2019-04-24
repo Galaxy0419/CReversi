@@ -2,13 +2,15 @@
 #ifndef _REVERSI_H
 #define _REVERSI_H
 
+#include <stdint.h>
+
 typedef struct board {
-	int board_matrix[8][8];
+	int8_t board_matrix[8][8];
 }board_t;
 
 typedef struct cord {
-	int row;
-	int column;
+	int8_t row;
+	int8_t column;
 }cord_t;
 
 const char* valid_difficulty = "123";
