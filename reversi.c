@@ -8,15 +8,14 @@
 
 static void my_gets(char *buffer, size_t buffer_len)
 {
-    memset(buffer, 0, buffer_len);
-
-    int c;
+    char c;
     int bytes_read = 0;
-    while (EOF != (c = fgetc(stdin)) && '\n' != c) {
+    while ((c = fgetc(stdin)) != EOF && c != '\n') {
         if (bytes_read < buffer_len - 1) {
-            buffer[bytes_read++] = (char)c;
+            buffer[bytes_read++] = c;
         }
     }
+	buffer[bytes_read];
 }
 
 static inline int your_oppenent(int player)
@@ -47,21 +46,6 @@ static cord position(char* input)
 			return valid_pos;
 	}
 	return invalid_pos;
-}
-
-static board new_board(void)
-{
-	board game_board = {{
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 2, 1, 0, 0, 0},
-		{0, 0, 0, 1, 2, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 0, 0, 0, 0},
-	}};
-	return game_board;
 }
 
 static void print_board(board game_board, int black_score, int white_score)
@@ -210,7 +194,16 @@ static void run_two_players(void)
 	int black_score = 0;
 	int white_score = 0;
 	cord current_pos = {-1, -1};
-	board in_game_board = new_board();
+	board in_game_board = {{
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 2, 1, 0, 0, 0},
+		{0, 0, 0, 1, 2, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+	}};
 
 	while (player != 0) {
 		score(in_game_board, &black_score, &white_score);
@@ -249,7 +242,16 @@ static void run_single_player(void)
 	int player = 1;
 	int black_score = 0;
 	int white_score = 0;
-	board in_game_board = new_board();
+	board in_game_board = {{
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 2, 1, 0, 0, 0},
+		{0, 0, 0, 1, 2, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0, 0, 0, 0},
+	}};
 
 	while (player != 0) {
 		score(in_game_board, &black_score, &white_score);
