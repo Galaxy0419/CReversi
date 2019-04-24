@@ -4,12 +4,12 @@
 
 typedef struct board {
 	int board_matrix[8][8];
-}board;
+}board_t;
 
 typedef struct cord {
 	int row;
 	int column;
-}cord;
+}cord_t;
 
 const char* valid_difficulty = "123";
 const char* valid_column = "abcdefgh";

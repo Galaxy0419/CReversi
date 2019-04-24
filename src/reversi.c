@@ -37,18 +37,18 @@ static int find_mapping_value(char pos)
 			return atoi(&pos_map[i][1]);
 }
 
-static cord position(char *restrict input)
+static cord_t position(char *restrict input)
 {
-	cord invalid_pos = {-1, -1};
+	cord_t invalid_pos = {-1, -1};
 	if (strchr(valid_column, input[0]) != NULL
 		&& strchr(valid_row, input[1]) != NULL) {
-			cord valid_pos = {atoi(&input[1]) - 1, find_mapping_value(input[0])};
+			cord_t valid_pos = {atoi(&input[1]) - 1, find_mapping_value(input[0])};
 			return valid_pos;
 	}
 	return invalid_pos;
 }
 
-static void print_board(board game_board, int black_score, int white_score)
+static void print_board(board_t game_board, int black_score, int white_score)
 {
 	
 	for (size_t i=0; i<8; i++) {
@@ -71,7 +71,7 @@ static void print_board(board game_board, int black_score, int white_score)
 	printf("     a b c d e f g h\n");
 }
 
-static void score(board game_board, int *restrict black_score, int *restrict white_score)
+static void score(board_t game_board, int *restrict black_score, int *restrict white_score)
 {
 	*black_score = 0;
 	*white_score = 0;
@@ -85,7 +85,7 @@ static void score(board game_board, int *restrict black_score, int *restrict whi
 	}
 }
 
-static bool enclosing(board game_board, int player, cord pos, cord direction)
+static bool enclosing(board_t game_board, int player, cord_t pos, cord_t direction)
 {
 	int row = pos.row + direction.row;
 	int column = pos.column + direction.column;
@@ -101,18 +101,18 @@ static bool enclosing(board game_board, int player, cord pos, cord direction)
 	return false;
 }
 
-static int valid_moves(board game_board, int player, cord *restrict valid_cords)
+static int valid_moves(board_t game_board, int player, cord_t *restrict valid_cords)
 {
 	int mem_ctr = 0;
 
 	for (size_t i=0; i<8; i++) {
 		for (size_t j=0; j<8; j++) {
 			for (size_t z=0; z<8; z++) {
-				cord pos = {i, j};
-				cord dir = {valid_direction[z][0], valid_direction[z][1]};
+				cord_t pos = {i, j};
+				cord_t dir = {valid_direction[z][0], valid_direction[z][1]};
 				if (game_board.board_matrix[i][j] == 0
 				&& enclosing(game_board, player, pos, dir)) {
-					valid_cords = (cord *)realloc(valid_cords, sizeof(cord) * (mem_ctr+1));
+					valid_cords = (cord_t *)realloc(valid_cords, sizeof(cord_t) * (mem_ctr+1));
 					(valid_cords+mem_ctr)->row = i;
 					(valid_cords+mem_ctr)->column = j;
 					mem_ctr++;
@@ -123,11 +123,11 @@ static int valid_moves(board game_board, int player, cord *restrict valid_cords)
 	return mem_ctr;
 }
 
-static void next_state(board *restrict game_board, int *restrict player, cord pos)
+static void next_state(board_t *restrict game_board, int *restrict player, cord_t pos)
 {
 	game_board->board_matrix[pos.row][pos.column] = *player;
 	for (size_t i=0; i<8; i++) {
-		cord dir = {valid_direction[i][0], valid_direction[i][1]};
+		cord_t dir = {valid_direction[i][0], valid_direction[i][1]};
 		if (enclosing(*game_board, *player, pos, dir)) {
 			for (size_t j=1; game_board->board_matrix[pos.row + j*dir.row][pos.column + j*dir.column] != *player; j++) {
 				game_board->board_matrix[pos.row + j*dir.row][pos.column + j*dir.column] = *player;
@@ -135,14 +135,14 @@ static void next_state(board *restrict game_board, int *restrict player, cord po
 		}
 	}
 	*player = your_oppenent(*player);
-	cord *restrict moves = (cord *)malloc(sizeof(cord));
+	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
 	if (valid_moves(*game_board, *player, moves) == 0) {
 		*player = 0;
 		return;
 	}
 }
 
-static cord promt_to_place(board game_board, int player)
+static cord_t promt_to_place(board_t game_board, int player)
 {
 	char pos[3];
 	char cplayer;
@@ -158,8 +158,8 @@ static cord promt_to_place(board game_board, int player)
 		exit(0);
 	}
 
-	cord *restrict moves = (cord *)malloc(sizeof(cord));
-	cord converted_pos = position(pos);
+	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
+	cord_t converted_pos = position(pos);
 	int lenghth = valid_moves(game_board, player, moves);
 	for (size_t i=0; i<lenghth; i++)
 		if (converted_pos.row == (moves+i)->row 
@@ -191,8 +191,8 @@ static void run_two_players(void)
 	int player = 1;
 	int black_score = 2;
 	int white_score = 2;
-	cord current_pos = {-1, -1};
-	board in_game_board = {{
+	cord_t current_pos = {-1, -1};
+	board_t in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -214,10 +214,10 @@ static void run_two_players(void)
 	finish_game(black_score, white_score);
 }
 
-static cord ai_place(board game_board, int level)
+static cord_t ai_place(board_t game_board, int level)
 {
 	int enclose_index = 0;
-	cord *restrict moves = (cord *)malloc(sizeof(cord));
+	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
 	int length = valid_moves(game_board, 2, moves);
 	if (level != 2) {
 		int enclose;
@@ -230,7 +230,7 @@ static cord ai_place(board game_board, int level)
 			int test_player = 2;
 			int black_score = 0;
 			int white_score = 0;
-			board test_board = game_board;
+			board_t test_board = game_board;
 			next_state(&test_board, &test_player, *(moves+i));
 			score(test_board, &black_score, &white_score);
 			if (level == 3 && white_score > enclose) {
@@ -252,7 +252,7 @@ static void run_single_player(int level)
 	int player = 1;
 	int black_score = 2;
 	int white_score = 2;
-	board in_game_board = {{
+	board_t in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -264,7 +264,7 @@ static void run_single_player(int level)
 	}};
 
 	while (player != 0) {
-		cord current_pos = {-1, -1};
+		cord_t current_pos = {-1, -1};
 		print_board(in_game_board, black_score, white_score);
 		if (player == 1){
 			current_pos = promt_to_place(in_game_board, player);
