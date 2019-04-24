@@ -134,12 +134,12 @@ static void next_state(board *restrict game_board, int *restrict player, cord po
 			}
 		}
 	}
+	*player = your_oppenent(*player);
 	cord *restrict moves = (cord *)malloc(sizeof(cord));
 	if (valid_moves(*game_board, *player, moves) == 0) {
 		*player = 0;
 		return;
 	}
-	*player = your_oppenent(*player);
 }
 
 static cord promt_to_place(board game_board, int player)
@@ -171,9 +171,10 @@ static cord promt_to_place(board game_board, int player)
 
 static void finish_game(int black_score, int white_score)
 {
-	puts("The game has finished!");
+	puts("\n");
+	puts("The game has finished!\n");
 	printf("Black Score: %d\n", black_score);
-	printf("White Score: %d\n", white_score);
+	printf("White Score: %d\n\n", white_score);
 
 	if (black_score > white_score)
 		puts("Black Wins!");
@@ -181,14 +182,15 @@ static void finish_game(int black_score, int white_score)
 		puts("Draw!");
 	else
 		puts("White Wins!");
+	sleep(4);
 	exit(0);
 }
 
 static void run_two_players(void)
 {
 	int player = 1;
-	int black_score = 0;
-	int white_score = 0;
+	int black_score = 2;
+	int white_score = 2;
 	cord current_pos = {-1, -1};
 	board in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -202,12 +204,13 @@ static void run_two_players(void)
 	}};
 
 	while (player != 0) {
-		score(in_game_board, &black_score, &white_score);
 		print_board(in_game_board, black_score, white_score);
 		current_pos = promt_to_place(in_game_board, player);
 		next_state(&in_game_board, &player, current_pos);
+		score(in_game_board, &black_score, &white_score);
 		puts("\n");
 	}
+	print_board(in_game_board, black_score, white_score);
 	finish_game(black_score, white_score);
 }
 
@@ -247,8 +250,8 @@ static cord ai_place(board game_board, int level)
 static void run_single_player(int level)
 {
 	int player = 1;
-	int black_score = 0;
-	int white_score = 0;
+	int black_score = 2;
+	int white_score = 2;
 	board in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -261,9 +264,8 @@ static void run_single_player(int level)
 	}};
 
 	while (player != 0) {
-		score(in_game_board, &black_score, &white_score);
-		print_board(in_game_board, black_score, white_score);
 		cord current_pos = {-1, -1};
+		print_board(in_game_board, black_score, white_score);
 		if (player == 1){
 			current_pos = promt_to_place(in_game_board, player);
 		}
@@ -285,7 +287,9 @@ static void run_single_player(int level)
 			current_pos = ai_place(in_game_board, level);
 		}
 		next_state(&in_game_board, &player, current_pos);
+		score(in_game_board, &black_score, &white_score);
 	}
+	print_board(in_game_board, black_score, white_score);
 	finish_game(black_score, white_score);
 }
 
@@ -298,7 +302,7 @@ int main(void)
 	puts("2. Two Players");
 	printf("Please choose your game mode: ");
 	my_gets(choice, sizeof(choice));
-	if (choice[0] == '1'){
+	if (choice[0] == '1') {
 		char level[2];
 		puts("1. Noob");
 		puts("2. Average");
