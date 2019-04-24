@@ -204,11 +204,11 @@ static void run_two_players(void)
 	}};
 
 	while (player != 0) {
+		puts("\n");
 		print_board(in_game_board, black_score, white_score);
 		current_pos = promt_to_place(in_game_board, player);
 		next_state(&in_game_board, &player, current_pos);
 		score(in_game_board, &black_score, &white_score);
-		puts("\n");
 	}
 	print_board(in_game_board, black_score, white_score);
 	finish_game(black_score, white_score);
@@ -268,6 +268,7 @@ static void run_single_player(int level)
 		print_board(in_game_board, black_score, white_score);
 		if (player == 1){
 			current_pos = promt_to_place(in_game_board, player);
+			puts("\n");
 		}
 		else {
 			puts("\n");
@@ -283,6 +284,7 @@ static void run_single_player(int level)
 					puts("Robot: I'm going to win!");
 					break;
 			}
+			puts("\n");
 			sleep(4);
 			current_pos = ai_place(in_game_board, level);
 		}
