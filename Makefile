@@ -5,10 +5,10 @@ RM  = rm -f
 CFLAGS = -march=x86-64 -mtune=generic -O3 -pipe -std=c18
 LDFLAGS = 
 
-*nix: reversi.c
-	$(GCC) $(CFLAGS) $(LDFLAGS) reversi.c -o CReversi
-win: reversi.c
-	$(WINCC) $(CFLAGS) $(LDFLAGS) reversi.c -o CReversi.exe
+*nix: src/reversi.c
+	$(GCC) $(CFLAGS) $(LDFLAGS) src/reversi.c -o CReversi
+win: src/reversi.c
+	$(WINCC) $(CFLAGS) $(LDFLAGS) src/reversi.c -o CReversi.exe
 
 clean:
 	$(RM) CReversi*
