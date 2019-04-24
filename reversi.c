@@ -51,8 +51,7 @@ static cord position(char* input)
 
 static board new_board()
 {
-	board game_board;
-	int board[8][8] = {
+	board game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -61,8 +60,7 @@ static board new_board()
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
-	};
-	memcpy(game_board.board_matrix, board, sizeof(board));
+	}};
 	return game_board;
 }
 
@@ -203,7 +201,6 @@ static void finish_game(int black_score, int white_score)
 		puts("Draw!");
 	else
 		puts("White Wins!");
-	
 	exit(0);
 }
 
