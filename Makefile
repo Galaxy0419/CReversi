@@ -2,16 +2,17 @@
 GCC = gcc
 WINCC = x86_64-w64-mingw32-gcc
 RM  = rm -f
-CFLAGS = -march=x86-64 -mtune=generic -O3 -pipe -std=c18
-LDFLAGS = -lpthread
+CFLAGS = -std=c18 -march=x86-64 -mtune=generic -O3 -pipe
+LDFLAGS = -static -static-libgcc -lpthread
 
 linux: src/reversi.c
-	$(GCC) $(CFLAGS) $(LDFLAGS) src/reversi.c -o CReversi
+	$(GCC) -o CReversi src/reversi.c $(CFLAGS) $(LDFLAGS)
+
 win: src/reversi.c
-	$(WINCC) $(CFLAGS) $(LDFLAGS) -DWIN src/reversi.c -o CReversi.exe
+	$(WINCC) -o CReversi.exe src/reversi.c -DWIN $(CFLAGS) $(LDFLAGS)
 
 debug: src/reversi.c
-	$(GCC) $(LDFLAGS) -g src/reversi.c -o CReversi
+	$(GCC) -o CReversi src/reversi.c -g -static $(LDFLAGS)
 
 clean:
 	$(RM) CReversi*

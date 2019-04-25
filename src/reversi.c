@@ -108,7 +108,7 @@ static bool enclosing(board_t game_board, uint_fast8_t player, cord_t pos, cord_
 	return false;
 }
 
-static void * valid_moves(void *para)
+static void *restrict const valid_moves(void *restrict const para)
 {
 	size_t *mem_ctr = (size_t *)malloc(sizeof(size_t));
 	*mem_ctr = 0;
