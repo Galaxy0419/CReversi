@@ -15,6 +15,12 @@ typedef struct cord {
 	int_fast8_t column;
 } cord_t;
 
+typedef struct v_mov {
+	uint_fast8_t player;
+	board_t game_board;
+	cord_t *valid_cords;
+} v_mov_t;
+
 const char* valid_difficulty = "123";
 const char* valid_column = "abcdefgh";
 const char* valid_row = "12345678";
