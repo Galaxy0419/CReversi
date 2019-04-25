@@ -8,12 +8,12 @@
 
 typedef struct board {
 	uint_fast8_t board_matrix[8][8];
-}board_t;
+} board_t;
 
 typedef struct cord {
 	int_fast8_t row;
 	int_fast8_t column;
-}cord_t;
+} cord_t;
 
 const char* valid_difficulty = "123";
 const char* valid_column = "abcdefgh";

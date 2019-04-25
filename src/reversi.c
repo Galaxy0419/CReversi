@@ -6,6 +6,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <string.h>
+#include <pthread.h>
 #include "reversi.h"
 
 static void my_gets(char *restrict const buffer, size_t buffer_len)
@@ -147,27 +148,28 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 {
 	char pos[3];
 	char cplayer;
+	cord_t converted_pos = {8, 8};
+	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
+	size_t lenghth = valid_moves(game_board, player, moves);
 	if (player == 1)
 		cplayer = 'B';
 	else
 		cplayer = 'W';
 
-	printf("(%c) Enter the position to place your disk: ", cplayer);
-	my_gets(pos, sizeof(pos));
-	if (pos[0] == 'q') {
-		puts("Thanks for playing C Reversi.");
-		exit(0);
+	while (converted_pos.row == 8) {
+		printf("(%c) Enter the position to place your disk: ", cplayer);
+		my_gets(pos, sizeof(pos));
+		if (pos[0] == 'q') {
+			puts("Thanks for playing C Reversi.");
+			exit(0);
+		}
+		converted_pos = position(pos);
+		for (size_t i=0; i<lenghth; i++)
+			if (converted_pos.row == (moves+i)->row 
+			&& converted_pos.column == (moves+i)->column)
+				return converted_pos;
+		puts("Come on, man.");
 	}
-
-	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
-	cord_t converted_pos = position(pos);
-	size_t lenghth = valid_moves(game_board, player, moves);
-	for (size_t i=0; i<lenghth; i++)
-		if (converted_pos.row == (moves+i)->row 
-		&& converted_pos.column == (moves+i)->column)
-			return converted_pos;
-	puts("Come on, man.");
-	return promt_to_place(game_board, player);
 }
 
 static void finish_game(uint_fast8_t black_score, uint_fast8_t white_score)
