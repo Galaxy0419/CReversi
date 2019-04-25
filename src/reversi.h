@@ -7,12 +7,12 @@
 #define MAX_ROBOT_SENTENCE 3
 
 typedef struct board {
-	int8_t board_matrix[8][8];
+	uint_fast8_t board_matrix[8][8];
 }board_t;
 
 typedef struct cord {
-	int8_t row;
-	int8_t column;
+	int_fast8_t row;
+	int_fast8_t column;
 }cord_t;
 
 const char* valid_difficulty = "123";

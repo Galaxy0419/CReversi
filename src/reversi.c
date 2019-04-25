@@ -20,19 +20,19 @@ static void my_gets(char *restrict const buffer, size_t buffer_len)
 	buffer[bytes_read];
 }
 
-static inline int8_t your_oppenent(int8_t player)
+static inline uint_fast8_t your_oppenent(uint_fast8_t player)
 {
 	if (player == 1)
 		return 2;
 	return 1;
 }
 
-static inline bool on_board(int8_t row, int8_t column)
+static inline bool on_board(uint_fast8_t row, uint_fast8_t column)
 {
 	return (row >= 0 && row <=7) && (column >=0 && column <= 7);
 }
 
-static int8_t find_mapping_value(char pos)
+static uint_fast8_t find_mapping_value(char pos)
 {
 	for (size_t i=0; i<8; i++)
 		if (pos == pos_map[i][0])
@@ -41,7 +41,7 @@ static int8_t find_mapping_value(char pos)
 
 static cord_t position(char *restrict const input)
 {
-	cord_t invalid_pos = {-1, -1};
+	cord_t invalid_pos = {8, 8};
 	if (strchr(valid_column, input[0]) != NULL
 		&& strchr(valid_row, input[1]) != NULL) {
 			cord_t valid_pos = {atoi(&input[1]) - 1, find_mapping_value(input[0])};
@@ -50,7 +50,7 @@ static cord_t position(char *restrict const input)
 	return invalid_pos;
 }
 
-static void print_board(board_t game_board, int8_t black_score, int8_t white_score)
+static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8_t white_score)
 {
 	
 	for (size_t i=0; i<8; i++) {
@@ -73,7 +73,7 @@ static void print_board(board_t game_board, int8_t black_score, int8_t white_sco
 	printf("     a b c d e f g h\n");
 }
 
-static void score(board_t game_board, int8_t *restrict const black_score, int8_t *restrict const white_score)
+static void score(board_t game_board, uint_fast8_t *restrict const black_score, uint_fast8_t *restrict const white_score)
 {
 	*black_score = 0;
 	*white_score = 0;
@@ -87,25 +87,24 @@ static void score(board_t game_board, int8_t *restrict const black_score, int8_t
 	}
 }
 
-static bool enclosing(board_t game_board, int8_t player, cord_t pos, cord_t direction)
+static bool enclosing(board_t game_board, uint_fast8_t player, cord_t pos, cord_t direction)
 {
-	int8_t row = pos.row + direction.row;
-	int8_t column = pos.column + direction.column;
+	uint_fast8_t row = pos.row + direction.row;
+	uint_fast8_t column = pos.column + direction.column;
 
 	while (on_board(row, column) 
 	&& game_board.board_matrix[row][column] == your_oppenent(player)) {
-		if (on_board(row+direction.row, column+direction.column) 
-		&& game_board.board_matrix[row+direction.row][column+direction.column] == player)
-			return true;
 		row += direction.row;
 		column += direction.column;
+		if (on_board(row, column) && game_board.board_matrix[row][column] == player)
+			return true;
 	}
 	return false;
 }
 
-static int8_t valid_moves(board_t game_board, int8_t player, cord_t *restrict valid_cords)
+static uint_fast8_t valid_moves(board_t game_board, uint_fast8_t player, cord_t *restrict valid_cords)
 {
-	int8_t mem_ctr = 0;
+	uint_fast8_t mem_ctr = 0;
 
 	for (size_t i=0; i<8; i++) {
 		for (size_t j=0; j<8; j++) {
@@ -125,7 +124,7 @@ static int8_t valid_moves(board_t game_board, int8_t player, cord_t *restrict va
 	return mem_ctr;
 }
 
-static void next_state(board_t *restrict const game_board, int8_t *restrict const player, cord_t pos)
+static void next_state(board_t *restrict const game_board, uint_fast8_t *restrict const player, cord_t pos)
 {
 	game_board->board_matrix[pos.row][pos.column] = *player;
 	for (size_t i=0; i<8; i++) {
@@ -144,7 +143,7 @@ static void next_state(board_t *restrict const game_board, int8_t *restrict cons
 	}
 }
 
-static cord_t promt_to_place(board_t game_board, int8_t player)
+static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 {
 	char pos[3];
 	char cplayer;
@@ -171,7 +170,7 @@ static cord_t promt_to_place(board_t game_board, int8_t player)
 	return promt_to_place(game_board, player);
 }
 
-static void finish_game(int8_t black_score, int8_t white_score)
+static void finish_game(uint_fast8_t black_score, uint_fast8_t white_score)
 {
 	puts("\n");
 	puts("The game has finished!\n");
@@ -190,10 +189,10 @@ static void finish_game(int8_t black_score, int8_t white_score)
 
 static void run_two_players(void)
 {
-	int8_t player = 1;
-	int8_t black_score = 2;
-	int8_t white_score = 2;
-	cord_t current_pos = {-1, -1};
+	uint_fast8_t player = 1;
+	uint_fast8_t black_score = 2;
+	uint_fast8_t white_score = 2;
+	cord_t current_pos = {8, 8};
 	board_t in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -216,22 +215,22 @@ static void run_two_players(void)
 	finish_game(black_score, white_score);
 }
 
-static cord_t ai_place(board_t game_board, int8_t level)
+static cord_t ai_place(board_t game_board, uint_fast8_t level)
 {
-	int8_t enclose_index = 0;
+	uint_fast8_t enclose_index = 0;
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
-	size_t length = valid_moves(game_board, 2, moves);
+	uint_fast8_t length = valid_moves(game_board, 2, moves);
 	if (level != 2) {
-		int8_t enclose;
+		uint_fast8_t enclose;
 		if (level == 1)
 			enclose = 8;
 		else
 			enclose = 0;
 		
 		for (size_t i=0; i<length; i++){
-			int8_t test_player = 2;
-			int8_t black_score = 0;
-			int8_t white_score = 0;
+			uint_fast8_t test_player = 2;
+			uint_fast8_t black_score = 0;
+			uint_fast8_t white_score = 0;
 			board_t test_board = game_board;
 			next_state(&test_board, &test_player, *(moves+i));
 			score(test_board, &black_score, &white_score);
@@ -249,11 +248,11 @@ static cord_t ai_place(board_t game_board, int8_t level)
 	return *(moves+enclose_index);
 }
 
-static void run_single_player(int8_t level)
+static void run_single_player(uint_fast8_t level)
 {
-	int8_t player = 1;
-	int8_t black_score = 2;
-	int8_t white_score = 2;
+	uint_fast8_t player = 1;
+	uint_fast8_t black_score = 2;
+	uint_fast8_t white_score = 2;
 	board_t in_game_board = {{
 		{0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0},
@@ -267,7 +266,7 @@ static void run_single_player(int8_t level)
 	srand(time(NULL));
 
 	while (player != 0) {
-		cord_t current_pos = {-1, -1};
+		cord_t current_pos = {8, 8};
 		print_board(in_game_board, black_score, white_score);
 		if (player == 1){
 			current_pos = promt_to_place(in_game_board, player);
@@ -275,7 +274,7 @@ static void run_single_player(int8_t level)
 		}
 		else {
 			puts("\n");
-			int8_t randnum = rand() % MAX_ROBOT_SENTENCE;
+			uint_fast8_t randnum = rand() % MAX_ROBOT_SENTENCE;
 			printf("%s\n", sentence_of_robot[randnum]);
 			puts("\n");
 			sleep(4);
@@ -289,7 +288,7 @@ static void run_single_player(int8_t level)
 }
 
 // main function
-int main(void)
+int_fast8_t main(void)
 {
 	char choice[2];
 	puts("Welcome to C Reversi!");
@@ -304,17 +303,18 @@ int main(void)
 		puts("3. Asian");
 		printf("Please choose a difficulty: ");
 		my_gets(level, sizeof(level));
-		if (strchr(valid_difficulty, level[0]) == NULL) {
+		if (strchr(valid_difficulty, level[0]) != NULL) {
+			run_single_player(atoi(&level[0]));
+		} else {
 			puts("Don't mess up with me! Byebye!");
-			exit(1);
 		}
-		run_single_player(atoi(&level[0]));
-	}
-	else if (choice[0] == '2'){
+	} else if (choice[0] == '2') {
 		run_two_players();
-	}
-	else{
+	} else {
 		puts("Don't mess up with me! Byebye!");
 	}
+
+	puts("Press enter to exit...");
+	getchar();
 	return 0;
 }
