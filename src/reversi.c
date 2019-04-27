@@ -120,6 +120,10 @@ static void *restrict const valid_moves(void *restrict const para)
 				cord_t dir = {valid_direction[z][0], valid_direction[z][1]};
 				if (((v_mov_t *)para)->game_board.board_matrix[i][j] == 0 && enclosing(((v_mov_t *)para)->game_board, ((v_mov_t *)para)->player, pos, dir)) {
 					((v_mov_t *)para)->valid_cords = (cord_t *)realloc(((v_mov_t *)para)->valid_cords, sizeof(cord_t) * (*mem_ctr+1));
+					if (! ((v_mov_t *)para)->valid_cords) {
+						perror("Memory error");
+						exit(1);
+					}
 					((((v_mov_t *)para)->valid_cords) + *mem_ctr)->row = i;
 					((((v_mov_t *)para)->valid_cords) + *mem_ctr)->column = j;
 					(*mem_ctr)++;
@@ -141,8 +145,12 @@ static void next_state(board_t *restrict const game_board, uint_fast8_t *restric
 			}
 		}
 	}
-	*player = your_oppenent(*player);
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
+	if (! moves) {
+		perror("Memory error");
+		exit(1);
+	}
+	*player = your_oppenent(*player);
 	v_mov_t para = {*player, *game_board, moves};
 	if (*(size_t *)valid_moves((void *)&para) == 0) {
 		*player = 0;
@@ -158,6 +166,10 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 	size_t *length;
 	cord_t converted_pos = {8, 8};
 	cord_t *moves = (cord_t *)malloc(sizeof(cord_t));
+	if (! moves) {
+		perror("Memory error");
+		exit(1);
+	}
 	v_mov_t para = {player, game_board, moves};
 
 	pthread_t v_mov_thread;
@@ -251,6 +263,11 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 	uint_fast8_t enclose_index = 0;
 	cord_t return_value;
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
+	if (! moves) {
+		perror("Memory error");
+		exit(1);
+	}
+	
 	v_mov_t para = {2, game_board, moves};
 
 	pthread_t v_mov_thread;
