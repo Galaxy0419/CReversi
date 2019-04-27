@@ -228,11 +228,9 @@ static void finish_game(uint_fast8_t black_score, uint_fast8_t white_score)
 		puts("Draw!");
 	else
 		puts("White Wins!");
-#ifdef WIN
-		Sleep(4000);
-#else
-		sleep(4);
-#endif
+
+	puts("Press enter to exit...");
+	getchar();
 	exit(0);
 }
 
@@ -260,6 +258,7 @@ static void run_two_players(void)
 		next_state(&in_game_board, &player, current_pos);
 		score(in_game_board, &black_score, &white_score);
 	}
+	puts("\n");
 	print_board(in_game_board, black_score, white_score);
 	finish_game(black_score, white_score);
 }
@@ -382,7 +381,5 @@ int main(void)
 		puts("Don't mess up with me! Byebye!");
 	}
 
-	puts("Press enter to exit...");
-	getchar();
 	return 0;
 }
