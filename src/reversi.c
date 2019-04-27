@@ -23,7 +23,7 @@ static void my_gets(char *restrict const buffer, size_t buffer_len)
 			buffer[bytes_read++] = c;
 		}
 	}
-	buffer[bytes_read];
+	buffer[bytes_read] = '\0';
 }
 
 static inline uint_fast8_t your_oppenent(uint_fast8_t player)
@@ -43,6 +43,7 @@ static uint_fast8_t find_mapping_value(char pos)
 	for (size_t i=0; i<8; i++)
 		if (pos == pos_map[i][0])
 			return atoi(&pos_map[i][1]);
+	return 8;
 }
 
 static cord_t position(char *restrict const input)
@@ -60,7 +61,7 @@ static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8
 {
 	
 	for (size_t i=0; i<8; i++) {
-		printf(" %d |", i+1);
+		printf(" %ld |", i+1);
 		for (size_t j=0; j<8; j++) {
 			if (game_board.board_matrix[i][j] == 1)
 				printf(" B");
@@ -110,28 +111,25 @@ static bool enclosing(board_t game_board, uint_fast8_t player, cord_t pos, cord_
 
 static void *restrict const valid_moves(void *restrict const para)
 {
-	size_t *mem_ctr = (size_t *)malloc(sizeof(size_t));
-	*mem_ctr = 0;
-
 	for (size_t i=0; i<8; i++) {
 		for (size_t j=0; j<8; j++) {
 			for (size_t z=0; z<8; z++) {
 				cord_t pos = {i, j};
 				cord_t dir = {valid_direction[z][0], valid_direction[z][1]};
 				if (((v_mov_t *)para)->game_board.board_matrix[i][j] == 0 && enclosing(((v_mov_t *)para)->game_board, ((v_mov_t *)para)->player, pos, dir)) {
-					((v_mov_t *)para)->valid_cords = (cord_t *)realloc(((v_mov_t *)para)->valid_cords, sizeof(cord_t) * (*mem_ctr+1));
+					((v_mov_t *)para)->valid_cords = (cord_t *)realloc(((v_mov_t *)para)->valid_cords, sizeof(cord_t) * (*(((v_mov_t *)para)->length)+1));
 					if (! ((v_mov_t *)para)->valid_cords) {
 						perror("Memory error");
 						exit(1);
 					}
-					((((v_mov_t *)para)->valid_cords) + *mem_ctr)->row = i;
-					((((v_mov_t *)para)->valid_cords) + *mem_ctr)->column = j;
-					(*mem_ctr)++;
+					((((v_mov_t *)para)->valid_cords) + *(((v_mov_t *)para)->length))->row = i;
+					((((v_mov_t *)para)->valid_cords) + *(((v_mov_t *)para)->length))->column = j;
+					(*(((v_mov_t *)para)->length))++;
 				}
 			}
 		}
 	}
-	return mem_ctr;
+	return NULL;
 }
 
 static void next_state(board_t *restrict const game_board, uint_fast8_t *restrict const player, cord_t pos)
@@ -150,10 +148,14 @@ static void next_state(board_t *restrict const game_board, uint_fast8_t *restric
 		perror("Memory error");
 		exit(1);
 	}
-	*player = your_oppenent(*player);
-	v_mov_t para = {*player, *game_board, moves};
-	if (*(size_t *)valid_moves((void *)&para) == 0) {
+
+	size_t length = 0;
+	v_mov_t para = {*player, *game_board, moves, &length};
+	valid_moves((void *)&para);
+	if (length == 0) {
 		*player = 0;
+	} else {
+		*player = your_oppenent(*player);
 	}
 	free(moves);
 }
@@ -163,14 +165,14 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 	char pos[3];
 	char cplayer;
 	bool is_join = false;
-	size_t *length;
+	size_t length = 0;
 	cord_t converted_pos = {8, 8};
 	cord_t *moves = (cord_t *)malloc(sizeof(cord_t));
 	if (! moves) {
 		perror("Memory error");
 		exit(1);
 	}
-	v_mov_t para = {player, game_board, moves};
+	v_mov_t para = {player, game_board, moves, &length};
 
 	pthread_t v_mov_thread;
 	pthread_create(&v_mov_thread, NULL, valid_moves, &para);
@@ -189,15 +191,18 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 		}
 		converted_pos = position(pos);
 
-		if (converted_pos.row == 8)
+		if (converted_pos.row == 8) {
+			puts("(-_-) Come on, you little naughty boy.");
 			continue;
+		}
+
 
 		if (! is_join) {
-			pthread_join(v_mov_thread, (void *)&length);
+			pthread_join(v_mov_thread, NULL);
 			is_join = true;
 		}
 
-		for (size_t i = 0; i < *length; i++) {
+		for (size_t i = 0; i < length; i++) {
 			if (converted_pos.row == ((para.valid_cords)+i)->row 
 			&& converted_pos.column == ((para.valid_cords)+i)->column) {
 				free(moves);
@@ -206,6 +211,8 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 		}
 		converted_pos.row = 8;
 	}
+	puts("(-_-) Come on, you little naughty boy.");
+	return (cord_t){8, 8};
 }
 
 static void finish_game(uint_fast8_t black_score, uint_fast8_t white_score)
@@ -259,7 +266,7 @@ static void run_two_players(void)
 
 static cord_t ai_place(board_t game_board, uint_fast8_t level)
 {
-	size_t *length;
+	size_t length = 0;
 	uint_fast8_t enclose_index = 0;
 	cord_t return_value;
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
@@ -268,7 +275,7 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 		exit(1);
 	}
 	
-	v_mov_t para = {2, game_board, moves};
+	v_mov_t para = {2, game_board, moves, &length};
 
 	pthread_t v_mov_thread;
 	pthread_create(&v_mov_thread, NULL, valid_moves, (void *)&para);
@@ -280,9 +287,9 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 		else
 			enclose = 0;
 		
-		pthread_join(v_mov_thread, (void *)&length);
+		pthread_join(v_mov_thread, NULL);
 
-		for (size_t i = 0; i < *length; i++){
+		for (size_t i = 0; i < length; i++){
 			uint_fast8_t test_player = 2;
 			uint_fast8_t black_score = 0;
 			uint_fast8_t white_score = 0;
@@ -298,7 +305,7 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 			}	
 		}
 	} else {
-		enclose_index = rand() % *length;
+		enclose_index = rand() % length;
 	}
 	return_value = *(para.valid_cords+enclose_index);
 	free(moves);
@@ -332,7 +339,7 @@ static void run_single_player(uint_fast8_t level)
 		else {
 			puts("\n");
 			uint_fast8_t randnum = rand() % MAX_ROBOT_SENTENCE;
-			printf("%s\n", sentence_of_robot[randnum]);
+			printf("Mr. Win: %s\n", sentence_of_robot[randnum]);
 			puts("\n");
 #ifdef WIN
 			Sleep(4000);
@@ -349,7 +356,7 @@ static void run_single_player(uint_fast8_t level)
 }
 
 // main function
-int_fast8_t main(void)
+int main(void)
 {
 	char choice[2];
 	puts("Welcome to C Reversi!");

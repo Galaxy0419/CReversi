@@ -12,7 +12,7 @@ win: src/reversi.c
 	$(WINCC) -o CReversi.exe src/reversi.c -DWIN $(CFLAGS) $(LDFLAGS)
 
 debug: src/reversi.c
-	$(GCC) -o CReversi src/reversi.c -g -static $(LDFLAGS)
+	$(GCC) -o CReversi src/reversi.c -g -Wall $(LDFLAGS)
 
 clean:
 	$(RM) CReversi*

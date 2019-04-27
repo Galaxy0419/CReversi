@@ -18,12 +18,13 @@ typedef struct cord {
 typedef struct v_mov {
 	uint_fast8_t player;
 	board_t game_board;
-	cord_t *valid_cords;
+	cord_t *restrict valid_cords;
+	size_t *restrict const length;
 } v_mov_t;
 
-const char* valid_difficulty = "123";
-const char* valid_column = "abcdefgh";
-const char* valid_row = "12345678";
+const char *restrict const valid_difficulty = "123";
+const char *restrict const valid_column = "abcdefgh";
+const char *restrict const valid_row = "12345678";
 
 const char pos_map[8][8] = {
 	{'a', '0'},
