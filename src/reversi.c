@@ -61,7 +61,7 @@ static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8
 {
 	
 	for (size_t i=0; i<8; i++) {
-		printf(" %ld |", i+1);
+		printf("   %ld |", i+1);
 		for (size_t j=0; j<8; j++) {
 			if (game_board.board_matrix[i][j] == 1)
 				printf(" B");
@@ -71,13 +71,13 @@ static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8
 				printf(" -");
 		}
 		if (i == 3)
-			printf("\tBlack Score: %d", black_score);
+			printf("    Black Score: %d", black_score);
 		else if (i == 5)
-			printf("\tWhite Score: %d", white_score);
+			printf("    White Score: %d", white_score);
 		printf("\n");
 	}
-	printf(" --------------------\n");
-	printf("     a b c d e f g h\n");
+	printf("   --------------------\n");
+	printf("       a b c d e f g h\n");
 }
 
 static void score(board_t game_board, uint_fast8_t *restrict const black_score, uint_fast8_t *restrict const white_score)
@@ -183,7 +183,7 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 		cplayer = 'W';
 
 	while (converted_pos.row == 8) {
-		printf("(%c) Enter the position to place your disk: ", cplayer);
+		printf("\n (%c) Enter the position to place your disk: ", cplayer);
 		my_gets(pos, sizeof(pos));
 		if (pos[0] == 'q') {
 			puts("Thanks for playing C Reversi.");
