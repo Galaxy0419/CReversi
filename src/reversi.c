@@ -146,8 +146,8 @@ static void next_state(board_t *restrict const game_board, uint_fast8_t *restric
 	v_mov_t para = {*player, *game_board, moves};
 	if (*(size_t *)valid_moves((void *)&para) == 0) {
 		*player = 0;
-		return;
 	}
+	free(moves);
 }
 
 static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
@@ -187,8 +187,10 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 
 		for (size_t i = 0; i < *length; i++) {
 			if (converted_pos.row == ((para.valid_cords)+i)->row 
-			&& converted_pos.column == ((para.valid_cords)+i)->column)
+			&& converted_pos.column == ((para.valid_cords)+i)->column) {
+				free(moves);
 				return converted_pos;
+			}
 		}
 		converted_pos.row = 8;
 	}
@@ -247,6 +249,7 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 {
 	size_t *length;
 	uint_fast8_t enclose_index = 0;
+	cord_t return_value;
 	cord_t *restrict moves = (cord_t *)malloc(sizeof(cord_t));
 	v_mov_t para = {2, game_board, moves};
 
@@ -280,7 +283,9 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 	} else {
 		enclose_index = rand() % *length;
 	}
-	return *(para.valid_cords+enclose_index);
+	return_value = *(para.valid_cords+enclose_index);
+	free(moves);
+	return return_value;
 }
 
 static void run_single_player(uint_fast8_t level)
