@@ -22,11 +22,11 @@ typedef struct v_mov {
 	size_t *restrict const length;
 } v_mov_t;
 
-const char *restrict const valid_difficulty = "123";
-const char *restrict const valid_column = "abcdefgh";
-const char *restrict const valid_row = "12345678";
+const char valid_difficulty[3] = "123";
+const char valid_column[8] = "abcdefgh";
+const char valid_row[8] = "12345678";
 
-const char pos_map[8][8] = {
+const char pos_map[8][2] = {
 	{'a', '0'},
 	{'b', '1'},
 	{'c', '2'},
