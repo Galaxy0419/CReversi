@@ -22,9 +22,9 @@ typedef struct v_mov {
 	size_t *restrict const length;
 } v_mov_t;
 
-const char valid_difficulty[3] = "123";
-const char valid_column[8] = "abcdefgh";
-const char valid_row[8] = "12345678";
+const char valid_difficulty[4] = "123";
+const char valid_column[9] = "abcdefgh";
+const char valid_row[9] = "12345678";
 
 const char pos_map[8][2] = {
 	{'a', '0'},
@@ -48,7 +48,7 @@ const int valid_direction[8][2] = {
 	{-1, -1}
 };
 
-const char sentence_of_robot[3][64] = {
+const char sentence_of_robot[3][32] = {
 	"Let me think for a while...",
 	"Aha, smart move.",
 	"I'm going to win!"

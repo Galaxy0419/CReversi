@@ -48,13 +48,12 @@ static uint_fast8_t find_mapping_value(char pos)
 
 static cord_t position(char *restrict const input)
 {
-	cord_t invalid_pos = {8, 8};
 	if (strchr(valid_column, input[0]) != NULL
 		&& strchr(valid_row, input[1]) != NULL) {
-			cord_t valid_pos = {atoi(&input[1]) - 1, find_mapping_value(input[0])};
+			cord_t valid_pos = {atoi(input+1) - 1, find_mapping_value(input[0])};
 			return valid_pos;
 	}
-	return invalid_pos;
+	return (cord_t){8, 8};
 }
 
 static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8_t white_score)
@@ -195,7 +194,6 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 			puts("(-_-) Come on, you little naughty boy.");
 			continue;
 		}
-
 
 		if (! is_join) {
 			pthread_join(v_mov_thread, NULL);
