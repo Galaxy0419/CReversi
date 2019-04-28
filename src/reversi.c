@@ -14,6 +14,13 @@
 	#include <unistd.h>
 #endif
 
+static void my_getc(char *restrict const ch)
+{
+	char c;
+	*ch = getchar();
+	while((c = getchar()) != EOF && c !='\n');
+}
+
 static void my_gets(char *restrict const buffer, size_t buffer_len)
 {
 	char c;
@@ -207,9 +214,9 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 				return converted_pos;
 			}
 		}
+		puts("(-_-) Come on, you little naughty boy.");
 		converted_pos.row = 8;
 	}
-	puts("(-_-) Come on, you little naughty boy.");
 	return (cord_t){8, 8};
 }
 
@@ -355,25 +362,25 @@ static void run_single_player(uint_fast8_t level)
 // main function
 int main(void)
 {
-	char choice[2];
+	char choice;
 	puts("Welcome to C Reversi!");
 	puts("1. Single Player");
 	puts("2. Two Players");
 	printf("Please choose your game mode: ");
-	my_gets(choice, sizeof(choice));
-	if (choice[0] == '1') {
-		char level[2];
+	my_getc(&choice);
+	if (choice == '1') {
+		char level;
 		puts("1. Noob");
 		puts("2. Average");
 		puts("3. Asian");
 		printf("Please choose a difficulty: ");
-		my_gets(level, sizeof(level));
-		if (strchr(valid_difficulty, level[0]) != NULL) {
-			run_single_player(atoi(&level[0]));
+		my_getc(&level);
+		if (strchr(valid_difficulty, level) != NULL) {
+			run_single_player(atoi(&level));
 		} else {
 			puts("Don't mess up with me! Byebye!");
 		}
-	} else if (choice[0] == '2') {
+	} else if (choice == '2') {
 		run_two_players();
 	} else {
 		puts("Don't mess up with me! Byebye!");
