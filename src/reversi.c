@@ -50,7 +50,8 @@ static uint_fast8_t find_mapping_value(char pos)
 	for (size_t i=0; i<8; i++)
 		if (pos == pos_map[i][0])
 			return atoi(&pos_map[i][1]);
-	return 8;
+	printf("Unexpect ERROR in find_mapping_value()");
+	exit(2);
 }
 
 static cord_t position(char *restrict const input)
@@ -217,7 +218,8 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 		puts("(-_-) Come on, you little naughty boy.");
 		converted_pos.row = 8;
 	}
-	return (cord_t){8, 8};
+	puts("Unexpected ERROR in promt_to_place()");
+	exit(3);
 }
 
 static void finish_game(uint_fast8_t black_score, uint_fast8_t white_score)
