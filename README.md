@@ -17,7 +17,7 @@ PS. The game will finish once there is no valid move for all players.
 5. How to use keyword static, const, const value, restrict
 6. How to use basic threading to improve speed
 7. How to use void *, const * and restrict *
-8. How rto use more data types, e.g. uint8_fast_t, bool...
+8. How to use more data types, e.g. uint8_fast_t, bool...
 9. How to write basic Makefile
 10. How to use macros to make your code portable
 

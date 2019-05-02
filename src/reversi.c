@@ -50,7 +50,7 @@ static uint_fast8_t find_mapping_value(char pos)
 	for (size_t i=0; i<8; i++)
 		if (pos == pos_map[i][0])
 			return atoi(&pos_map[i][1]);
-	printf("Unexpect ERROR in find_mapping_value()");
+	puts("Unexpect ERROR in find_mapping_value()");
 	exit(2);
 }
 
