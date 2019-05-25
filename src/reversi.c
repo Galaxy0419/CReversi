@@ -47,19 +47,18 @@ static inline bool on_board(uint_fast8_t row, uint_fast8_t column)
 
 static uint_fast8_t find_mapping_value(char pos)
 {
-	for (size_t i=0; i<8; i++)
+	for (size_t i=0; i<8; i++) {
 		if (pos == pos_map[i][0])
 			return atoi(&pos_map[i][1]);
+	}
 	puts("Unexpect ERROR in find_mapping_value()");
 	exit(2);
 }
 
 static cord_t position(char *restrict const input)
 {
-	if (strchr(valid_column, input[0]) != NULL
-		&& strchr(valid_row, input[1]) != NULL) {
-			cord_t valid_pos = {atoi(input+1) - 1, find_mapping_value(input[0])};
-			return valid_pos;
+	if (strchr(valid_column, input[0]) != NULL && strchr(valid_row, input[1]) != NULL) {
+		return (cord_t){atoi(input+1) - 1, find_mapping_value(input[0])};
 	}
 	return (cord_t){8, 8};
 }
@@ -120,18 +119,20 @@ static void *restrict const valid_moves(void *restrict const para)
 {
 	for (size_t i=0; i<8; i++) {
 		for (size_t j=0; j<8; j++) {
-			for (size_t z=0; z<8; z++) {
-				cord_t pos = {i, j};
-				cord_t dir = {valid_direction[z][0], valid_direction[z][1]};
-				if (((v_mov_t *)para)->game_board.board_matrix[i][j] == 0 && enclosing(((v_mov_t *)para)->game_board, ((v_mov_t *)para)->player, pos, dir)) {
-					((v_mov_t *)para)->valid_cords = (cord_t *)realloc(((v_mov_t *)para)->valid_cords, sizeof(cord_t) * (*(((v_mov_t *)para)->length)+1));
-					if (! ((v_mov_t *)para)->valid_cords) {
-						perror("Memory error");
-						exit(1);
+			if (((v_mov_t *)para)->game_board.board_matrix[i][j] == 0) {
+				for (size_t z=0; z<8; z++) {
+					cord_t pos = {i, j};
+					cord_t dir = {valid_direction[z][0], valid_direction[z][1]};
+					if (enclosing(((v_mov_t *)para)->game_board, ((v_mov_t *)para)->player, pos, dir)) {
+						((v_mov_t *)para)->valid_cords = (cord_t *)realloc(((v_mov_t *)para)->valid_cords, sizeof(cord_t) * (*(((v_mov_t *)para)->length)+1));
+						if (! ((v_mov_t *)para)->valid_cords) {
+							perror("Memory error");
+							exit(1);
+						}
+						((((v_mov_t *)para)->valid_cords) + *(((v_mov_t *)para)->length))->row = i;
+						((((v_mov_t *)para)->valid_cords) + *(((v_mov_t *)para)->length))->column = j;
+						(*(((v_mov_t *)para)->length))++;
 					}
-					((((v_mov_t *)para)->valid_cords) + *(((v_mov_t *)para)->length))->row = i;
-					((((v_mov_t *)para)->valid_cords) + *(((v_mov_t *)para)->length))->column = j;
-					(*(((v_mov_t *)para)->length))++;
 				}
 			}
 		}
@@ -280,7 +281,7 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 		perror("Memory error");
 		exit(1);
 	}
-	
+
 	v_mov_t para = {2, game_board, moves, &length};
 
 	pthread_t v_mov_thread;
@@ -338,7 +339,7 @@ static void run_single_player(uint_fast8_t level)
 	while (player != 0) {
 		cord_t current_pos = {8, 8};
 		print_board(in_game_board, black_score, white_score);
-		if (player == 1){
+		if (player == 1) {
 			current_pos = promt_to_place(in_game_board, player);
 			puts("\n");
 		}

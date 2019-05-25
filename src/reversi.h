@@ -48,7 +48,7 @@ const int valid_direction[8][2] = {
 	{-1, -1}
 };
 
-const char sentence_of_robot[3][32] = {
+const char sentence_of_robot[MAX_ROBOT_SENTENCE][32] = {
 	"Let me think for a while...",
 	"Aha, smart move.",
 	"I'm going to win!"
