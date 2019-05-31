@@ -14,23 +14,25 @@
 	#include <unistd.h>
 #endif
 
-static void my_getc(char *restrict const ch)
+static inline size_t input(char **string, char *restrict const prompt, size_t init_size, size_t step_size)
 {
 	char c;
-	*ch = getchar();
-	while((c = getchar()) != EOF && c !='\n');
-}
-
-static void my_gets(char *restrict const buffer, size_t buffer_len)
-{
-	char c;
-	size_t bytes_read = 0;
+	size_t length = 0;
+	*string = (char *)malloc(sizeof(char) * init_size);
+	printf("%s", prompt);
 	while ((c = getchar()) != EOF && c != '\n') {
-		if (bytes_read < buffer_len - 1) {
-			buffer[bytes_read++] = c;
+		if (length == init_size) {
+			*string = (char *)realloc(*string, sizeof(init_size+=step_size));
+			if (! *string) {
+				perror("Memory ERROR");
+				exit(EXIT_FAILURE);
+			}
 		}
+		(*string)[length++] = c;
 	}
-	buffer[bytes_read] = '\0';
+	(*string)[length] = '\0';
+	*string = (char *)realloc(*string, sizeof(char) * length);
+	return length;
 }
 
 static inline uint_fast8_t your_oppenent(uint_fast8_t player)
@@ -168,9 +170,9 @@ static void next_state(board_t *restrict const game_board, uint_fast8_t *restric
 	free(moves);
 }
 
-static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
+static cord_t prompt_to_place(board_t game_board, uint_fast8_t player)
 {
-	char pos[3];
+	char *pos;
 	char cplayer;
 	bool is_join = false;
 	size_t length = 0;
@@ -192,15 +194,16 @@ static cord_t promt_to_place(board_t game_board, uint_fast8_t player)
 
 	while (converted_pos.row == 8) {
 		printf("\n (%c) Enter the position to place your disk: ", cplayer);
-		my_gets(pos, sizeof(pos));
+		size_t read = input(&pos, "", 4, 4);
 		if (pos[0] == 'q') {
 			puts("Thanks for playing C Reversi.");
 			exit(0);
 		}
 		converted_pos = position(pos);
 
-		if (converted_pos.row == 8) {
+		if (read != 2 || converted_pos.row == 8) {
 			puts("(-_-) Come on, you little naughty boy.");
+			converted_pos.row = 8;
 			continue;
 		}
 
@@ -262,7 +265,7 @@ static void run_two_players(void)
 	while (player != 0) {
 		puts("\n");
 		print_board(in_game_board, black_score, white_score);
-		current_pos = promt_to_place(in_game_board, player);
+		current_pos = prompt_to_place(in_game_board, player);
 		next_state(&in_game_board, &player, current_pos);
 		score(in_game_board, &black_score, &white_score);
 	}
@@ -340,10 +343,9 @@ static void run_single_player(uint_fast8_t level)
 		cord_t current_pos = {8, 8};
 		print_board(in_game_board, black_score, white_score);
 		if (player == 1) {
-			current_pos = promt_to_place(in_game_board, player);
+			current_pos = prompt_to_place(in_game_board, player);
 			puts("\n");
-		}
-		else {
+		} else {
 			puts("\n");
 			uint_fast8_t randnum = rand() % MAX_ROBOT_SENTENCE;
 			printf("Mr. Win: %s\n", sentence_of_robot[randnum]);
@@ -365,29 +367,25 @@ static void run_single_player(uint_fast8_t level)
 // main function
 int main(void)
 {
-	char choice;
+	char *choice;
 	puts("Welcome to C Reversi!");
 	puts("1. Single Player");
 	puts("2. Two Players");
-	printf("Please choose your game mode: ");
-	my_getc(&choice);
-	if (choice == '1') {
-		char level;
-		puts("1. Noob");
-		puts("2. Average");
-		puts("3. Asian");
-		printf("Please choose a difficulty: ");
-		my_getc(&level);
-		if (strchr(valid_difficulty, level) != NULL) {
-			run_single_player(atoi(&level));
-		} else {
-			puts("Don't mess up with me! Byebye!");
+	size_t read_len = input(&choice, "Please choose your game mode: ", 1, 4);
+	if (read_len == 1) {
+		if (choice[0] == '1') {
+			puts("1. Noob");
+			puts("2. Average");
+			puts("3. Asian");
+			read_len = input(&choice, "Please choose a difficulty: ", 1, 4);
+			if (read_len == 1 && atoi(choice) > 0 && atoi(choice) < 4) {
+				run_single_player(atoi(choice));
+			}
+		} else if (choice[0] == '2') {
+			free(choice);
+			run_two_players();
 		}
-	} else if (choice == '2') {
-		run_two_players();
-	} else {
-		puts("Don't mess up with me! Byebye!");
 	}
-
+	puts("Don't mess up with me! Byebye!");
 	return 0;
 }

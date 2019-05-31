@@ -22,7 +22,6 @@ typedef struct v_mov {
 	size_t *restrict const length;
 } v_mov_t;
 
-const char valid_difficulty[4] = "123";
 const char valid_column[9] = "abcdefgh";
 const char valid_row[9] = "12345678";
 
