@@ -1,9 +1,13 @@
 // Copyright (c) 2019, William TANG <galaxyking0419@gmail.com>
-#ifndef _REVERSI_H
-#define _REVERSI_H
+#ifndef __REVERSI_H__
+#define __REVERSI_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include <stdint.h>
-
 #define MAX_ROBOT_SENTENCE 3
 
 typedef struct board {
@@ -52,5 +56,10 @@ const char sentence_of_robot[MAX_ROBOT_SENTENCE][32] = {
 	"Aha, smart move.",
 	"I'm going to win!"
 };
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
