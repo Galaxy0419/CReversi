@@ -17,7 +17,13 @@
 
 static inline void ctrl_c_handler(int signum)
 {
-	fprintf(stderr, "\n\nThanks for playing the game.\nSee you next time!\n\nPress ENTER to exit...");
+	fprintf(
+		stderr,
+		"\n\n"
+		"Thanks for playing the game.\n"
+		"See you next time!\n\n"
+		"Press ENTER to exit..."
+	);
 	getchar();
 	exit(0);
 }
@@ -92,8 +98,10 @@ static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8
 			printf("    White Score: %d", white_score);
 		printf("\n");
 	}
-	printf("   --------------------\n");
-	printf("       a b c d e f g h\n");
+	printf(
+		"   --------------------\n"
+		"       a b c d e f g h\n"
+	);
 }
 
 static void score(board_t game_board, uint_fast8_t *restrict const black_score, uint_fast8_t *restrict const white_score)
@@ -235,10 +243,14 @@ static cord_t prompt_to_place(board_t game_board, uint_fast8_t player)
 
 static void finish_game(uint_fast8_t black_score, uint_fast8_t white_score)
 {
-	puts("\n");
-	puts("The game has finished!\n");
-	printf("Black Score: %d\n", black_score);
-	printf("White Score: %d\n\n", white_score);
+	printf(
+		"\n"
+		"The game has finished!\n"
+		"Black Score: %d\n"
+		"White Score: %d\n\n",
+		black_score,
+		white_score
+	);
 
 	if (black_score > white_score)
 		puts("Black Wins!");
@@ -303,7 +315,7 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 			enclose = 8;
 		else
 			enclose = 0;
-		
+
 		pthread_join(v_mov_thread, NULL);
 
 		for (size_t i = 0; i < length; i++){
@@ -378,15 +390,20 @@ int main(void)
 
 	char *choice;
 
-	puts("Welcome to C Reversi!");
-	puts("1. Single Player");
-	puts("2. Two Players");
+	puts(
+		"Welcome to C Reversi!\n"
+		"1. Single Player\n"
+		"2. Two Players"
+	);
+
 	size_t read_len = input(&choice, "Please choose your game mode: ", 1, 4);
 	if (read_len == 1) {
 		if (choice[0] == '1') {
-			puts("1. Noob");
-			puts("2. Average");
-			puts("3. Asian");
+			puts(
+				"1. Noob\n"
+				"2. Average\n"
+				"3. Asian"
+			);
 			read_len = input(&choice, "Please choose a difficulty: ", 1, 4);
 			if (read_len == 1 && atoi(choice) > 0 && atoi(choice) < 4) {
 				run_single_player(atoi(choice));
@@ -397,8 +414,10 @@ int main(void)
 		}
 	}
 
-	puts("\nDon't mess up with me! Byebye!");
-	printf("\nPress ENTER to exit...");
+	printf(
+		"\nDon't mess up with me! Byebye!\n\n"
+		"Press ENTER to exit..."
+	);
 	getchar();
 	return 0;
 }
