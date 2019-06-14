@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <signal.h>
 #include <pthread.h>
 #include "reversi.h"
 
@@ -13,6 +14,13 @@
 #else
 	#include <unistd.h>
 #endif
+
+static inline void ctrl_c_handler(int signum)
+{
+	fprintf(stderr, "\n\nThanks for playing the game.\nSee you next time!\n\nPress ENTER to exit...");
+	getchar();
+	exit(0);
+}
 
 static inline size_t input(char **string, char *restrict const prompt, size_t init_size, size_t step_size)
 {
@@ -366,7 +374,10 @@ static void run_single_player(uint_fast8_t level)
 // main function
 int main(void)
 {
+	signal(SIGINT, ctrl_c_handler);
+
 	char *choice;
+
 	puts("Welcome to C Reversi!");
 	puts("1. Single Player");
 	puts("2. Two Players");
@@ -385,6 +396,9 @@ int main(void)
 			run_two_players();
 		}
 	}
-	puts("Don't mess up with me! Byebye!");
+
+	puts("\nDon't mess up with me! Byebye!");
+	printf("\nPress ENTER to exit...");
+	getchar();
 	return 0;
 }
