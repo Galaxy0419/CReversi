@@ -56,11 +56,6 @@ static inline uint_fast8_t your_oppenent(uint_fast8_t player)
 	return 1;
 }
 
-static inline bool on_board(uint_fast8_t row, uint_fast8_t column)
-{
-	return (row >= 0 && row <=7) && (column >=0 && column <= 7);
-}
-
 static inline uint_fast8_t find_mapping_value(char pos)
 {
 	for (size_t i=0; i<8; i++) {
@@ -123,10 +118,10 @@ static bool enclosing(board_t game_board, uint_fast8_t player, cord_t pos, cord_
 	uint_fast8_t row = pos.row + direction.row;
 	uint_fast8_t column = pos.column + direction.column;
 
-	while (on_board(row, column) && game_board.board_matrix[row][column] == your_oppenent(player)) {
+	while (row >= 0 && row <=7 && column >=0 && column <= 7 && game_board.board_matrix[row][column] == your_oppenent(player)) {
 		row += direction.row;
 		column += direction.column;
-		if (on_board(row, column) && game_board.board_matrix[row][column] == player)
+		if (row >= 0 && row <=7 && column >=0 && column <= 7 && game_board.board_matrix[row][column] == player)
 			return true;
 	}
 	return false;
