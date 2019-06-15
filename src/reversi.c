@@ -15,13 +15,14 @@
 	#include <unistd.h>
 #endif
 
-static inline void ctrl_c_handler(int signum)
+static inline void exit_handler(int signum)
 {
 	fprintf(
 		stderr,
 		"\n\n"
 		"Thanks for playing the game.\n"
-		"See you next time!\n\n"
+		"See you next time!\n"
+		"\n"
 		"Press ENTER to exit..."
 	);
 	getchar();
@@ -44,8 +45,11 @@ static inline size_t input(char **string, char *restrict const prompt, size_t in
 		}
 		(*string)[length++] = c;
 	}
+	if (feof(stdin)) {
+		exit_handler(0);
+	}
 	(*string)[length] = '\0';
-	*string = (char *)realloc(*string, sizeof(char) * length);
+	*string = (char *)realloc(*string, sizeof(char) * (length + 1));
 	return length;
 }
 
@@ -66,10 +70,12 @@ static inline uint_fast8_t find_mapping_value(char pos)
 	exit(2);
 }
 
-static inline cord_t position(char *restrict const input)
+static inline cord_t position(char *restrict const pos)
 {
-	if (strchr(valid_column, input[0]) != NULL && strchr(valid_row, input[1]) != NULL) {
-		return (cord_t){atoi(input+1) - 1, find_mapping_value(input[0])};
+	if (strlen(pos) == 2 
+	&& strchr(valid_column, pos[0]) != NULL
+	&& strchr(valid_row, pos[1]) != NULL) {
+		return (cord_t){atoi(pos+1) - 1, find_mapping_value(pos[0])};
 	}
 	return (cord_t){8, 8};
 }
@@ -95,7 +101,7 @@ static void print_board(board_t game_board, uint_fast8_t black_score, uint_fast8
 	}
 	printf(
 		"   --------------------\n"
-		"       a b c d e f g h\n"
+		"       a b c d e f g h \n"
 	);
 }
 
@@ -118,10 +124,12 @@ static bool enclosing(board_t game_board, uint_fast8_t player, cord_t pos, cord_
 	uint_fast8_t row = pos.row + direction.row;
 	uint_fast8_t column = pos.column + direction.column;
 
-	while (row >= 0 && row <=7 && column >=0 && column <= 7 && game_board.board_matrix[row][column] == your_oppenent(player)) {
+	while (row >= 0 && row <=7 && column >=0 && column <= 7 \
+			&& game_board.board_matrix[row][column] == your_oppenent(player)) {
 		row += direction.row;
 		column += direction.column;
-		if (row >= 0 && row <=7 && column >=0 && column <= 7 && game_board.board_matrix[row][column] == player)
+		if (row >= 0 && row <=7 && column >=0 && column <= 7 \
+			&& game_board.board_matrix[row][column] == player)
 			return true;
 	}
 	return false;
@@ -206,8 +214,7 @@ static cord_t prompt_to_place(board_t game_board, uint_fast8_t player)
 		printf("\n (%c) Enter the position to place your disk: ", cplayer);
 		size_t read = input(&pos, "", 4, 4);
 		if (pos[0] == 'q') {
-			puts("Thanks for playing C Reversi.");
-			exit(0);
+			exit_handler(0);
 		}
 		converted_pos = position(pos);
 
@@ -329,6 +336,7 @@ static cord_t ai_place(board_t game_board, uint_fast8_t level)
 			}	
 		}
 	} else {
+		pthread_join(v_mov_thread, NULL);
 		enclose_index = rand() % length;
 	}
 	return_value = *(para.valid_cords+enclose_index);
@@ -360,15 +368,19 @@ static void run_single_player(uint_fast8_t level)
 			current_pos = prompt_to_place(in_game_board, player);
 			puts("\n");
 		} else {
-			puts("\n");
-			uint_fast8_t randnum = rand() % MAX_ROBOT_SENTENCE;
-			printf("Mr. Win: %s\n", sentence_of_robot[randnum]);
-			puts("\n");
+			printf(
+				"\n"
+				"Mr. Win: %s\n"
+				"\n",
+				sentence_of_robot[rand() % MAX_ROBOT_SENTENCE]
+			);
+
 #ifdef WIN
 			Sleep(4000);
 #else
-			sleep(4);
+			sleep(2);
 #endif
+
 			current_pos = ai_place(in_game_board, level);
 		}
 		next_state(&in_game_board, &player, current_pos);
@@ -381,7 +393,7 @@ static void run_single_player(uint_fast8_t level)
 // main function
 int main(void)
 {
-	signal(SIGINT, ctrl_c_handler);
+	signal(SIGINT, exit_handler);
 
 	char *choice;
 
@@ -410,7 +422,9 @@ int main(void)
 	}
 
 	printf(
-		"\nDon't mess up with me! Byebye!\n\n"
+		"\n"
+		"Don't mess up with me! Byebye!\n"
+		"\n"
 		"Press ENTER to exit..."
 	);
 	getchar();
