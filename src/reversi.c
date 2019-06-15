@@ -219,7 +219,10 @@ static cord_t prompt_to_place(board_t game_board, uint_fast8_t player)
 		converted_pos = position(pos);
 
 		if (read != 2 || converted_pos.row == 8) {
-			puts("(-_-) Come on, you little naughty boy.");
+			puts(
+				"\n"
+				"(-_-) Come on, you little naughty boy."
+			);
 			converted_pos.row = 8;
 			continue;
 		}
@@ -236,7 +239,10 @@ static cord_t prompt_to_place(board_t game_board, uint_fast8_t player)
 				return converted_pos;
 			}
 		}
-		puts("(-_-) Come on, you little naughty boy.");
+		puts(
+			"\n"
+			"(-_-) Come on, you little naughty boy."
+		);
 		converted_pos.row = 8;
 	}
 	puts("Unexpected ERROR in promt_to_place()");
@@ -422,7 +428,7 @@ int main(void)
 	}
 
 	printf(
-		"\n"
+		"\n\n"
 		"Don't mess up with me! Byebye!\n"
 		"\n"
 		"Press ENTER to exit..."
