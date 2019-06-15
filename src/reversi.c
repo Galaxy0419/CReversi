@@ -46,7 +46,7 @@ static inline size_t input(char **string, char *restrict const prompt, size_t in
 		(*string)[length++] = c;
 	}
 	if (feof(stdin)) {
-		exit_handler(0);
+		clearerr(stdin);
 	}
 	(*string)[length] = '\0';
 	*string = (char *)realloc(*string, sizeof(char) * (length + 1));
